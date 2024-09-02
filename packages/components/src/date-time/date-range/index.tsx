@@ -23,12 +23,12 @@ import {
 import { __, isRTL } from '@wordpress/i18n';
 import { arrowLeft, arrowRight } from '@wordpress/icons';
 import { dateI18n } from '@wordpress/date';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Day from './day';
+import Day from '../date/day';
 import type { DatePickerProps } from '../types';
 import {
 	Wrapper,
@@ -36,37 +36,40 @@ import {
 	NavigatorHeading,
 	Calendar,
 	DayOfWeek,
-} from './styles';
+} from '../date/styles';
 import { inputToDate } from '../utils';
 import Button from '../../button';
 import { TIMEZONELESS_FORMAT } from '../constants';
 
 /**
- * DatePicker is a React component that renders a calendar for date selection.
+ * DateRange is a React component that renders a calendar for date range selection.
  *
  * ```jsx
- * import { DatePicker } from '@wordpress/components';
+ * import { DateRange } from '@wordpress/components';
  * import { useState } from '@wordpress/element';
  *
- * const MyDatePicker = () => {
+ * const MyDateRange = () => {
  *   const [ date, setDate ] = useState( new Date() );
  *
  *   return (
- *     <DatePicker
- *       currentDate={ date }
+ *     <DateRange
+ *       rangeStart={ date }
+ *       rangeEnd={ date }
  *       onChange={ ( newDate ) => setDate( newDate ) }
  *     />
  *   );
  * };
  * ```
  */
-export function DatePicker( {
-	currentDate,
+export function DateRange( {
+	currentDate, // used to focus the current date in the calendar
 	onChange,
 	events = [],
 	isInvalidDate,
 	onMonthPreviewed,
 	startOfWeek: weekStartsOn = 0,
+	rangeStart = null,
+	rangeEnd = null,
 }: DatePickerProps ) {
 	const date = currentDate ? inputToDate( currentDate ) : new Date();
 
@@ -78,11 +81,22 @@ export function DatePicker( {
 		isSelected,
 		viewPreviousMonth,
 		viewNextMonth,
+		selectRange,
 	} = useLilius( {
-		selected: [ startOfDay( date ) ],
+		selected: [],
 		viewing: startOfDay( date ),
 		weekStartsOn,
 	} );
+
+	useEffect( () => {
+		if ( rangeStart && rangeEnd ) {
+			selectRange(
+				startOfDay( rangeStart ),
+				startOfDay( rangeEnd ),
+				true
+			);
+		}
+	}, [ rangeStart, rangeEnd, selectRange ] );
 
 	// Used to implement a roving tab index. Tracks the day that receives focus
 	// when the user tabs into the calendar.
@@ -98,14 +112,13 @@ export function DatePicker( {
 	const [ prevCurrentDate, setPrevCurrentDate ] = useState( currentDate );
 	if ( currentDate !== prevCurrentDate ) {
 		setPrevCurrentDate( currentDate );
-		setSelected( [ startOfDay( date ) ] );
 		setViewing( startOfDay( date ) );
 		setFocusable( startOfDay( date ) );
 	}
 
 	return (
 		<Wrapper
-			className="components-datetime__date"
+			className="components-datetime__date-range"
 			role="application"
 			aria-label={ __( 'Calendar' ) }
 		>
@@ -263,4 +276,4 @@ export function DatePicker( {
 	);
 }
 
-export default DatePicker;
+export default DateRange;

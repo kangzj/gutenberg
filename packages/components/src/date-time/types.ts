@@ -134,6 +134,12 @@ export type DatePickerProps = {
 	 * @default 0
 	 */
 	startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+	// TODO: add a new prop type for the following props
+	rangeStart?: Date | string | number | null;
+	rangeEnd?: Date | string | number | null;
+	firstSelectableDate?: Date | string | number | null;
+	lastSelectableDate?: Date | string | number | null;
 };
 
 export type DateTimePickerProps = Omit< DatePickerProps, 'onChange' > &

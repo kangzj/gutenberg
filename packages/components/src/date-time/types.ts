@@ -134,11 +134,37 @@ export type DatePickerProps = {
 	 * @default 0
 	 */
 	startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+};
 
-	// TODO: add a new prop type for the following props
+export type DateRangeProps = Omit< DatePickerProps, 'onChange' > & {
+	/**
+	 * The current date and time at initialization. Optionally pass in a `null`
+	 */
+	currentDate?: Date | string | number | null;
+	/**
+	 * The function called when a new date range has been selected. It is
+	 * passed the date and time as an argument.
+	 */
+	onChange?: ( startDate: string | null, endDate: string | null ) => void;
+
+	/**
+	 * The start date of the range.
+	 */
 	rangeStart?: Date | string | number | null;
+
+	/**
+	 * The end date of the range.
+	 */
 	rangeEnd?: Date | string | number | null;
+
+	/**
+	 * The first selectable date in the calendar.
+	 */
 	firstSelectableDate?: Date | string | number | null;
+
+	/**
+	 * The last selectable date in the calendar.
+	 */
 	lastSelectableDate?: Date | string | number | null;
 };
 

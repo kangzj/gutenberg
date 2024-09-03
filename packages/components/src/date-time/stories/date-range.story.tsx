@@ -41,9 +41,9 @@ const Template: StoryFn< typeof DateRange > = ( {
 		<DateRange
 			{ ...args }
 			currentDate={ date }
-			onChange={ ( newDate ) => {
-				setDate( newDate );
-				onChange?.( newDate );
+			onChange={ ( startDate, endDate ) => {
+				setDate( startDate );
+				onChange?.( startDate, endDate );
 			} }
 		/>
 	);

@@ -145,7 +145,7 @@ export type DateRangeProps = Omit< DatePickerProps, 'onChange' > & {
 	 * The function called when a new date range has been selected. It is
 	 * passed the date and time as an argument.
 	 */
-	onChange?: ( startDate: string | null, endDate: string | null ) => void;
+	onChange?: ( startDate: Date | null, endDate: Date | null ) => void;
 
 	/**
 	 * The start date of the range.

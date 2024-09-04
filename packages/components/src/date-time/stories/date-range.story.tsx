@@ -13,6 +13,7 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import DateRange from '../date-range';
 import { daysFromNow, isWeekend } from './utils';
+import { inputToDate } from '../utils';
 
 const meta: Meta< typeof DateRange > = {
 	title: 'Components/DateRange',
@@ -34,15 +35,31 @@ const Template: StoryFn< typeof DateRange > = ( {
 	...args
 } ) => {
 	const [ date, setDate ] = useState( currentDate );
+	const [ rangeEnd, setRangeEnd ] = useState< Date | null >( null );
+	const [ rangeStart, setRangeStart ] = useState< Date | null >( null );
+
+	useEffect( () => {
+		setDate( currentDate );
+		if ( ! args.rangeStart || ! args.rangeEnd ) {
+			return;
+		}
+		setRangeEnd( inputToDate( args.rangeEnd ) );
+		setRangeStart( inputToDate( args.rangeStart ) );
+	}, [ args.rangeStart, args.rangeEnd, currentDate ] );
+
 	useEffect( () => {
 		setDate( currentDate );
 	}, [ currentDate ] );
 	return (
 		<DateRange
 			{ ...args }
+			rangeEnd={ rangeEnd }
+			rangeStart={ rangeStart }
 			currentDate={ date }
 			onChange={ ( startDate, endDate ) => {
 				setDate( startDate );
+				setRangeEnd( endDate );
+				setRangeStart( startDate );
 				onChange?.( startDate, endDate );
 			} }
 		/>

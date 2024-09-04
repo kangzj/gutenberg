@@ -8,6 +8,10 @@ import {
 	addMonths,
 	startOfDay,
 	isSameMonth,
+	isBefore,
+	isAfter,
+	isSameDay,
+	intervalToDuration,
 } from 'date-fns';
 
 /**
@@ -60,6 +64,11 @@ export function DateRange( {
 }: DateRangeProps ) {
 	const date = currentDate ? inputToDate( currentDate ) : new Date();
 
+	const [ startDate, setStartDate ] = useState< Date | null >( null );
+	const [ endDate, setEndDate ] = useState< Date | null >( null );
+	const [ prevStartDate, setPrevStartDate ] = useState< Date | null >();
+	const [ prevEndDate, setPrevEndDate ] = useState< Date | null >();
+
 	const {
 		calendar,
 		viewing,
@@ -68,21 +77,63 @@ export function DateRange( {
 		viewPreviousMonth,
 		viewNextMonth,
 		selectRange,
+		select,
+		clearSelected,
 	} = useLilius( {
 		selected: [],
 		viewing: startOfDay( date ),
 		weekStartsOn,
 	} );
 
+	// Update internal state when rangeStart or rangeEnd props change.
 	useEffect( () => {
-		if ( rangeStart && rangeEnd ) {
-			selectRange(
-				startOfDay( rangeStart ),
-				startOfDay( rangeEnd ),
-				true
-			);
+		if (
+			rangeStart &&
+			( ! startDate || ! isSameDay( rangeStart, startDate ) )
+		) {
+			setStartDate( inputToDate( rangeStart ) );
 		}
-	}, [ rangeStart, rangeEnd, selectRange ] );
+		if ( rangeEnd && ( ! endDate || ! isSameDay( rangeEnd, endDate ) ) ) {
+			setEndDate( inputToDate( rangeEnd ) );
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ rangeStart, rangeEnd ] );
+
+	useEffect( () => {
+		// Switch dates
+		if ( startDate && endDate && isBefore( endDate, startDate ) ) {
+			setStartDate( endDate );
+			setEndDate( startDate );
+			return;
+		}
+
+		// If no range is selected, deselect the previous range
+		if ( ! startDate || ! endDate ) {
+			clearSelected();
+		}
+
+		// Start and end dates need to be always select if not empty
+		if ( startDate ) {
+			select( startDate );
+		}
+		if ( endDate ) {
+			select( endDate );
+		}
+
+		// If there is a range and the reange changed, select the new range
+		if (
+			startDate &&
+			endDate &&
+			( ! prevStartDate ||
+				! isSameDay( startDate, prevStartDate ) ||
+				! prevEndDate ||
+				! isSameDay( endDate, prevEndDate ) )
+		) {
+			selectRange( startOfDay( startDate ), startOfDay( endDate ), true );
+			onChange?.( startOfDay( startDate ), startOfDay( endDate ) );
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ startDate, endDate ] );
 
 	// Used to implement a roving tab index. Tracks the day that receives focus
 	// when the user tabs into the calendar.
@@ -151,23 +202,51 @@ export function DateRange( {
 				isSelected={ isSelected }
 				events={ events }
 				onDayClick={ ( day ) => {
-					// TODO: Implement range selection.
+					let newStartDate = startDate,
+						newEndDate = endDate,
+						daysFromStartDate,
+						daysFromEndDate;
+
 					setFocusable( day );
-					const newStartDate = format(
-						// Don't change the selected date's time fields.
-						new Date(
-							day.getFullYear(),
-							day.getMonth(),
-							day.getDate(),
-							date.getHours(),
-							date.getMinutes(),
-							date.getSeconds(),
-							date.getMilliseconds()
-						),
-						TIMEZONELESS_FORMAT
-					);
-					const newEndDate = newStartDate;
-					onChange?.( newStartDate, newEndDate );
+
+					if ( newStartDate && newEndDate ) {
+						daysFromStartDate = intervalToDuration( {
+							start: newStartDate,
+							end: day,
+						} );
+						daysFromEndDate = intervalToDuration( {
+							start: day,
+							end: newEndDate,
+						} );
+					}
+
+					if ( newStartDate && isSameDay( day, newStartDate ) ) {
+						newStartDate = null;
+					} else if ( newEndDate && isSameDay( day, newEndDate ) ) {
+						newEndDate = null;
+					} else if ( ! newStartDate ) {
+						newStartDate = day;
+					} else if ( ! newEndDate ) {
+						newEndDate = day;
+					} else if ( isBefore( day, newStartDate ) ) {
+						newStartDate = day;
+					} else if ( isAfter( day, newEndDate ) ) {
+						newEndDate = day;
+					} else if (
+						daysFromStartDate?.days &&
+						daysFromEndDate?.days &&
+						daysFromStartDate.days < daysFromEndDate.days
+					) {
+						newStartDate = day;
+					} else {
+						newEndDate = day;
+					}
+
+					setPrevStartDate( startDate );
+					setPrevEndDate( endDate );
+
+					setStartDate( newStartDate );
+					setEndDate( newEndDate );
 				} }
 				onDayKeyDown={ ( nextFocusable ) => {
 					setFocusable( nextFocusable );

@@ -151,15 +151,15 @@ export function DateRange( {
 			aria-label={ __( 'Calendar' ) }
 		>
 			<Calendar
+				calendar={ calendar }
+				events={ events }
+				isInvalidDate={ isInvalidDate }
+				isSelected={ isSelected }
+				onMonthPreviewed={ onMonthPreviewed }
+				setFocusable={ setFocusable }
+				viewing={ viewing }
 				viewPreviousMonth={ viewPreviousMonth }
 				viewNextMonth={ viewNextMonth }
-				setFocusable={ setFocusable }
-				onMonthPreviewed={ onMonthPreviewed }
-				calendar={ calendar }
-				isInvalidDate={ isInvalidDate }
-				viewing={ viewing }
-				isSelected={ isSelected }
-				events={ events }
 				onDayClick={ ( day ) => {
 					let newStartDate = startDate,
 						newEndDate = endDate,

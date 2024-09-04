@@ -166,6 +166,8 @@ export type DateRangeProps = Omit< DatePickerProps, 'onChange' > & {
 	 * The last selectable date in the calendar.
 	 */
 	lastSelectableDate?: Date | string | number | null;
+
+	numberOfMonths?: number;
 };
 
 export type DateTimePickerProps = Omit< DatePickerProps, 'onChange' > &

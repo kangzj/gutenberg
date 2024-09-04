@@ -4,8 +4,6 @@
 import { useLilius } from 'use-lilius';
 import {
 	format,
-	subMonths,
-	addMonths,
 	startOfDay,
 	isSameMonth,
 	isBefore,
@@ -17,9 +15,7 @@ import {
 /**
  * WordPress dependencies
  */
-import { __, isRTL } from '@wordpress/i18n';
-import { arrowLeft, arrowRight } from '@wordpress/icons';
-import { dateI18n } from '@wordpress/date';
+import { __ } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
 
 /**
@@ -27,9 +23,8 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import Calendar from '../date/calendar';
 import type { DateRangeProps } from '../types';
-import { Wrapper, Navigator, NavigatorHeading } from '../date/styles';
+import { Wrapper } from '../date/styles';
 import { inputToDate } from '../utils';
-import Button from '../../button';
 import { TIMEZONELESS_FORMAT } from '../constants';
 
 /**
@@ -61,6 +56,7 @@ export function DateRange( {
 	startOfWeek: weekStartsOn = 0,
 	rangeStart = null,
 	rangeEnd = null,
+	numberOfMonths = 2,
 }: DateRangeProps ) {
 	const date = currentDate ? inputToDate( currentDate ) : new Date();
 
@@ -83,6 +79,7 @@ export function DateRange( {
 		selected: [],
 		viewing: startOfDay( date ),
 		weekStartsOn,
+		numberOfMonths,
 	} );
 
 	// Update internal state when rangeStart or rangeEnd props change.
@@ -144,7 +141,7 @@ export function DateRange( {
 	if ( currentDate !== prevCurrentDate ) {
 		setPrevCurrentDate( currentDate );
 		setViewing( startOfDay( date ) );
-		setFocusable( startOfDay( date ) );
+		setFocusable( startOfDay( date ) ); // TODO: look at focusable later.
 	}
 
 	return (
@@ -153,49 +150,11 @@ export function DateRange( {
 			role="application"
 			aria-label={ __( 'Calendar' ) }
 		>
-			<Navigator>
-				<Button
-					icon={ isRTL() ? arrowRight : arrowLeft }
-					variant="tertiary"
-					aria-label={ __( 'View previous month' ) }
-					onClick={ () => {
-						viewPreviousMonth();
-						setFocusable( subMonths( focusable, 1 ) );
-						onMonthPreviewed?.(
-							format(
-								subMonths( viewing, 1 ),
-								TIMEZONELESS_FORMAT
-							)
-						);
-					} }
-				/>
-				<NavigatorHeading level={ 3 }>
-					<strong>
-						{ dateI18n(
-							'F',
-							viewing,
-							-viewing.getTimezoneOffset()
-						) }
-					</strong>{ ' ' }
-					{ dateI18n( 'Y', viewing, -viewing.getTimezoneOffset() ) }
-				</NavigatorHeading>
-				<Button
-					icon={ isRTL() ? arrowLeft : arrowRight }
-					variant="tertiary"
-					aria-label={ __( 'View next month' ) }
-					onClick={ () => {
-						viewNextMonth();
-						setFocusable( addMonths( focusable, 1 ) );
-						onMonthPreviewed?.(
-							format(
-								addMonths( viewing, 1 ),
-								TIMEZONELESS_FORMAT
-							)
-						);
-					} }
-				/>
-			</Navigator>
 			<Calendar
+				viewPreviousMonth={ viewPreviousMonth }
+				viewNextMonth={ viewNextMonth }
+				setFocusable={ setFocusable }
+				onMonthPreviewed={ onMonthPreviewed }
 				calendar={ calendar }
 				isInvalidDate={ isInvalidDate }
 				viewing={ viewing }
@@ -206,8 +165,6 @@ export function DateRange( {
 						newEndDate = endDate,
 						daysFromStartDate,
 						daysFromEndDate;
-
-					setFocusable( day );
 
 					if ( newStartDate && newEndDate ) {
 						daysFromStartDate = intervalToDuration( {
@@ -249,7 +206,6 @@ export function DateRange( {
 					setEndDate( newEndDate );
 				} }
 				onDayKeyDown={ ( nextFocusable ) => {
-					setFocusable( nextFocusable );
 					if ( ! isSameMonth( nextFocusable, viewing ) ) {
 						setViewing( nextFocusable );
 						onMonthPreviewed?.(

@@ -149,7 +149,7 @@ export function DateRange( {
 		<Wrapper
 			className="components-datetime__date-range"
 			role="application"
-			aria-label={ __( 'Calendar' ) }
+			aria-label={ __( 'Date Range' ) }
 		>
 			{ calendar.map( ( month, index ) => {
 				return (

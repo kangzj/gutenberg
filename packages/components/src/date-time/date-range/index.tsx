@@ -214,6 +214,7 @@ export function DateRange( {
 								newEndDate = day;
 							}
 
+							// TODO: only update if changed
 							setPrevStartDate( startDate );
 							setPrevEndDate( endDate );
 

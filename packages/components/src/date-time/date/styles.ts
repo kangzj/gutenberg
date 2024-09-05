@@ -34,7 +34,13 @@ export const Calendar = styled.div`
 	display: grid;
 	grid-template-columns: 0.5fr repeat( 5, 1fr ) 0.5fr;
 	justify-items: center;
-	row-gap: ${ space( 2 ) };
+`;
+
+export const DateRangeWrapper = styled.div`
+	display: flex;
+	flex-flow: row wrap;
+	gap: ${ space( 7 ) };
+	justify-content: center;
 `;
 
 export const DayOfWeek = styled.div`

@@ -24,7 +24,7 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import Calendar from '../date/calendar';
 import type { DateRangeProps } from '../types';
-import { Wrapper } from '../date/styles';
+import { DateRangeWrapper } from '../date/styles';
 import { inputToDate } from '../utils';
 import { TIMEZONELESS_FORMAT } from '../constants';
 
@@ -146,7 +146,7 @@ export function DateRange( {
 	}
 
 	return (
-		<Wrapper
+		<DateRangeWrapper
 			className="components-datetime__date-range"
 			role="application"
 			aria-label={ __( 'Date Range' ) }
@@ -229,7 +229,7 @@ export function DateRange( {
 					/>
 				);
 			} ) }
-		</Wrapper>
+		</DateRangeWrapper>
 	);
 }
 

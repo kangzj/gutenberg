@@ -10,6 +10,7 @@ import {
 	isAfter,
 	isSameDay,
 	intervalToDuration,
+	addMonths,
 } from 'date-fns';
 
 /**
@@ -150,71 +151,84 @@ export function DateRange( {
 			role="application"
 			aria-label={ __( 'Calendar' ) }
 		>
-			<Calendar
-				calendar={ calendar }
-				events={ events }
-				isInvalidDate={ isInvalidDate }
-				isSelected={ isSelected }
-				onMonthPreviewed={ onMonthPreviewed }
-				setFocusable={ setFocusable }
-				viewing={ viewing }
-				viewPreviousMonth={ viewPreviousMonth }
-				viewNextMonth={ viewNextMonth }
-				onDayClick={ ( day ) => {
-					let newStartDate = startDate,
-						newEndDate = endDate,
-						daysFromStartDate,
-						daysFromEndDate;
+			{ calendar.map( ( month, index ) => {
+				return (
+					<Calendar
+						key={ index }
+						calendar={ [ month ] }
+						calendarIndex={ index }
+						events={ events }
+						numberOfMonths={ numberOfMonths }
+						isInvalidDate={ isInvalidDate }
+						isSelected={ isSelected }
+						onMonthPreviewed={ onMonthPreviewed }
+						setFocusable={ setFocusable }
+						viewing={ addMonths( viewing, index ) }
+						viewPreviousMonth={ viewPreviousMonth }
+						viewNextMonth={ viewNextMonth }
+						onDayClick={ ( day ) => {
+							let newStartDate = startDate,
+								newEndDate = endDate,
+								daysFromStartDate,
+								daysFromEndDate;
 
-					if ( newStartDate && newEndDate ) {
-						daysFromStartDate = intervalToDuration( {
-							start: newStartDate,
-							end: day,
-						} );
-						daysFromEndDate = intervalToDuration( {
-							start: day,
-							end: newEndDate,
-						} );
-					}
+							if ( newStartDate && newEndDate ) {
+								daysFromStartDate = intervalToDuration( {
+									start: newStartDate,
+									end: day,
+								} );
+								daysFromEndDate = intervalToDuration( {
+									start: day,
+									end: newEndDate,
+								} );
+							}
 
-					if ( newStartDate && isSameDay( day, newStartDate ) ) {
-						newStartDate = null;
-					} else if ( newEndDate && isSameDay( day, newEndDate ) ) {
-						newEndDate = null;
-					} else if ( ! newStartDate ) {
-						newStartDate = day;
-					} else if ( ! newEndDate ) {
-						newEndDate = day;
-					} else if ( isBefore( day, newStartDate ) ) {
-						newStartDate = day;
-					} else if ( isAfter( day, newEndDate ) ) {
-						newEndDate = day;
-					} else if (
-						daysFromStartDate?.days &&
-						daysFromEndDate?.days &&
-						daysFromStartDate.days < daysFromEndDate.days
-					) {
-						newStartDate = day;
-					} else {
-						newEndDate = day;
-					}
+							if (
+								newStartDate &&
+								isSameDay( day, newStartDate )
+							) {
+								newStartDate = null;
+							} else if (
+								newEndDate &&
+								isSameDay( day, newEndDate )
+							) {
+								newEndDate = null;
+							} else if ( ! newStartDate ) {
+								newStartDate = day;
+							} else if ( ! newEndDate ) {
+								newEndDate = day;
+							} else if ( isBefore( day, newStartDate ) ) {
+								newStartDate = day;
+							} else if ( isAfter( day, newEndDate ) ) {
+								newEndDate = day;
+							} else if (
+								daysFromStartDate?.days &&
+								daysFromEndDate?.days &&
+								daysFromStartDate.days < daysFromEndDate.days
+							) {
+								newStartDate = day;
+							} else {
+								newEndDate = day;
+							}
 
-					setPrevStartDate( startDate );
-					setPrevEndDate( endDate );
+							setPrevStartDate( startDate );
+							setPrevEndDate( endDate );
 
-					setStartDate( newStartDate );
-					setEndDate( newEndDate );
-				} }
-				onDayKeyDown={ ( nextFocusable ) => {
-					if ( ! isSameMonth( nextFocusable, viewing ) ) {
-						setViewing( nextFocusable );
-						onMonthPreviewed?.(
-							format( nextFocusable, TIMEZONELESS_FORMAT )
-						);
-					}
-				} }
-				focusable={ focusable }
-			/>
+							setStartDate( newStartDate );
+							setEndDate( newEndDate );
+						} }
+						onDayKeyDown={ ( nextFocusable ) => {
+							if ( ! isSameMonth( nextFocusable, viewing ) ) {
+								setViewing( nextFocusable );
+								onMonthPreviewed?.(
+									format( nextFocusable, TIMEZONELESS_FORMAT )
+								);
+							}
+						} }
+						focusable={ focusable }
+					/>
+				);
+			} ) }
 		</Wrapper>
 	);
 }

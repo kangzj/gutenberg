@@ -53,6 +53,8 @@ type CalendarProps = {
 	onMonthPreviewed?: ( date: string ) => void;
 	calendarIndex?: number;
 	numberOfMonths?: number;
+	rangeStart?: Date | null;
+	rangeEnd?: Date | null;
 };
 
 export function Calendar( {
@@ -70,6 +72,8 @@ export function Calendar( {
 	onMonthPreviewed,
 	calendarIndex = 0,
 	numberOfMonths = 1,
+	rangeStart = null,
+	rangeEnd = null,
 }: CalendarProps ) {
 	// Allows us to only programmatically focus() a day when focus was already
 	// within the calendar. This stops us stealing focus from e.g. a TimePicker
@@ -159,6 +163,14 @@ export function Calendar( {
 								isToday={ isSameDay( day, new Date() ) }
 								isInvalid={
 									isInvalidDate ? isInvalidDate( day ) : false
+								}
+								isBoundary={
+									!! (
+										( rangeStart &&
+											isSameDay( day, rangeStart ) ) ||
+										( rangeEnd &&
+											isSameDay( day, rangeEnd ) )
+									)
 								}
 								numEvents={
 									events.filter( ( event ) =>

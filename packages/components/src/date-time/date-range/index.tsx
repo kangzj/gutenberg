@@ -162,6 +162,8 @@ export function DateRange( {
 						isInvalidDate={ isInvalidDate }
 						isSelected={ isSelected }
 						onMonthPreviewed={ onMonthPreviewed }
+						rangeStart={ startDate }
+						rangeEnd={ endDate }
 						setFocusable={ setFocusable }
 						viewing={ addMonths( viewing, index ) }
 						viewPreviousMonth={ viewPreviousMonth }

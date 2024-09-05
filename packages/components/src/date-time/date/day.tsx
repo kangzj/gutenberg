@@ -13,7 +13,7 @@ import { useRef, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { DayButton } from './styles';
+import { ButtonWrapper, DayButton } from './styles';
 
 type DayProps = {
 	day: Date;
@@ -26,6 +26,7 @@ type DayProps = {
 	isInvalid: boolean;
 	onClick: () => void;
 	onKeyDown: KeyboardEventHandler;
+	isBoundary?: boolean;
 };
 
 function Day( {
@@ -39,6 +40,7 @@ function Day( {
 	numEvents,
 	onClick,
 	onKeyDown,
+	isBoundary = false,
 }: DayProps ) {
 	const ref = useRef< HTMLButtonElement >();
 
@@ -55,21 +57,23 @@ function Day( {
 	}, [ isFocusable ] );
 
 	return (
-		<DayButton
-			ref={ ref }
-			className="components-datetime__date__day" // Unused, for backwards compatibility.
-			disabled={ isInvalid }
-			tabIndex={ isFocusable ? 0 : -1 }
-			aria-label={ getDayLabel( day, isSelected, numEvents ) }
-			column={ column }
-			isSelected={ isSelected }
-			isToday={ isToday }
-			hasEvents={ numEvents > 0 }
-			onClick={ onClick }
-			onKeyDown={ onKeyDown }
-		>
-			{ dateI18n( 'j', day, -day.getTimezoneOffset() ) }
-		</DayButton>
+		<ButtonWrapper isSelected={ isSelected } isBoundary={ isBoundary }>
+			<DayButton
+				ref={ ref }
+				className="components-datetime__date__day" // Unused, for backwards compatibility.
+				disabled={ isInvalid }
+				tabIndex={ isFocusable ? 0 : -1 }
+				aria-label={ getDayLabel( day, isSelected, numEvents ) }
+				column={ column }
+				isSelected={ isSelected }
+				isToday={ isToday }
+				hasEvents={ numEvents > 0 }
+				onClick={ onClick }
+				onKeyDown={ onKeyDown }
+			>
+				{ dateI18n( 'j', day, -day.getTimezoneOffset() ) }
+			</DayButton>
+		</ButtonWrapper>
 	);
 }
 

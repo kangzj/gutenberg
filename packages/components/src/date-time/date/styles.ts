@@ -16,6 +16,31 @@ export const Wrapper = styled.div`
 	box-sizing: border-box;
 `;
 
+export const ButtonWrapper = styled.div< {
+	isBoundary: boolean;
+	isSelected: boolean;
+} >`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: ${ space( 8 ) };
+	width: ${ space( 8 ) };
+
+	${ ( props ) =>
+		! props.isBoundary &&
+		`background-color: ${
+			props.isSelected ? COLORS.theme.gray[ 600 ] : COLORS.white
+		};
+		&&& button {
+			color: ${ props.isSelected ? COLORS.white : COLORS.theme.foreground };
+			background-color: transparent;
+		};
+		` };
+
+	${ ( props ) =>
+		props.isBoundary && `background-color: ${ COLORS.theme.accent };` };
+`;
+
 export const Navigator = styled( HStack )`
 	margin-bottom: ${ space( 4 ) };
 	justify-content: space-between;
@@ -31,7 +56,6 @@ export const NavigatorHeading = styled( Heading )`
 `;
 
 export const Calendar = styled.div`
-	column-gap: ${ space( 2 ) };
 	display: grid;
 	grid-template-columns: 0.5fr repeat( 5, 1fr ) 0.5fr;
 	justify-items: center;
@@ -70,6 +94,8 @@ export const DayButton = styled( Button, {
 	grid-column: ${ ( props ) => props.column };
 	position: relative;
 	justify-content: center;
+	align-items: center;
+	padding: ${ space( 1 ) };
 
 	${ ( props ) =>
 		props.column === 1 &&

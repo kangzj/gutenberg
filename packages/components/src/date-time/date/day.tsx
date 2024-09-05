@@ -27,6 +27,7 @@ type DayProps = {
 	onClick: () => void;
 	onKeyDown: KeyboardEventHandler;
 	isBoundary?: boolean;
+	selectionMode?: 'single' | 'range';
 };
 
 function Day( {
@@ -41,6 +42,7 @@ function Day( {
 	onClick,
 	onKeyDown,
 	isBoundary = false,
+	selectionMode = 'single',
 }: DayProps ) {
 	const ref = useRef< HTMLButtonElement >();
 
@@ -57,7 +59,12 @@ function Day( {
 	}, [ isFocusable ] );
 
 	return (
-		<ButtonWrapper isSelected={ isSelected } isBoundary={ isBoundary }>
+		<ButtonWrapper
+			isSelected={ isSelected }
+			isBoundary={ isBoundary }
+			selectionMode={ selectionMode }
+			isToday={ isToday }
+		>
 			<DayButton
 				ref={ ref }
 				className="components-datetime__date__day" // Unused, for backwards compatibility.
@@ -70,6 +77,7 @@ function Day( {
 				hasEvents={ numEvents > 0 }
 				onClick={ onClick }
 				onKeyDown={ onKeyDown }
+				selectionMode={ selectionMode }
 			>
 				{ dateI18n( 'j', day, -day.getTimezoneOffset() ) }
 			</DayButton>

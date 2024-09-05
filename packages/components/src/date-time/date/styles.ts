@@ -19,6 +19,8 @@ export const Wrapper = styled.div`
 export const ButtonWrapper = styled.div< {
 	isBoundary: boolean;
 	isSelected: boolean;
+	isToday: boolean;
+	selectionMode: 'single' | 'range';
 } >`
 	display: flex;
 	justify-content: center;
@@ -27,8 +29,9 @@ export const ButtonWrapper = styled.div< {
 	width: ${ space( 8 ) };
 
 	${ ( props ) =>
-		! props.isBoundary &&
-		`background-color: ${
+		props.selectionMode === 'range' &&
+		`
+		background-color: ${
 			props.isSelected ? COLORS.theme.gray[ 600 ] : COLORS.white
 		};
 		&&& button {
@@ -38,7 +41,17 @@ export const ButtonWrapper = styled.div< {
 		` };
 
 	${ ( props ) =>
-		props.isBoundary && `background-color: ${ COLORS.theme.accent };` };
+		props.selectionMode === 'range' &&
+		props.isBoundary &&
+		`background-color: ${ COLORS.theme.accent };` };
+
+	${ ( props ) =>
+		props.selectionMode === 'range' &&
+		! props.isSelected &&
+		props.isToday &&
+		`
+		background: ${ COLORS.gray[ 200 ] };
+		` }
 `;
 
 export const Navigator = styled( HStack )`
@@ -84,12 +97,19 @@ export const DayOfWeek = styled.div`
 
 export const DayButton = styled( Button, {
 	shouldForwardProp: ( prop: string ) =>
-		! [ 'column', 'isSelected', 'isToday', 'hasEvents' ].includes( prop ),
+		! [
+			'column',
+			'isSelected',
+			'isToday',
+			'hasEvents',
+			'selectionMode',
+		].includes( prop ),
 } )< {
 	column: number;
 	isSelected: boolean;
 	isToday: boolean;
 	hasEvents: boolean;
+	selectionMode: 'single' | 'range';
 } >`
 	grid-column: ${ ( props ) => props.column };
 	position: relative;
@@ -116,7 +136,10 @@ export const DayButton = styled( Button, {
 		` }
 
 	&&& {
-		border-radius: ${ CONFIG.radiusRound };
+		${ ( props ) =>
+			`border-radius: ${
+				props.selectionMode === 'range' ? '0' : CONFIG.radiusRound
+			};` };
 		height: ${ space( 7 ) };
 		width: ${ space( 7 ) };
 

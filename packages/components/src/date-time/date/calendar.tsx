@@ -55,6 +55,7 @@ type CalendarProps = {
 	numberOfMonths?: number;
 	rangeStart?: Date | null;
 	rangeEnd?: Date | null;
+	selectionMode?: 'single' | 'range';
 };
 
 export function Calendar( {
@@ -74,6 +75,7 @@ export function Calendar( {
 	numberOfMonths = 1,
 	rangeStart = null,
 	rangeEnd = null,
+	selectionMode = 'single',
 }: CalendarProps ) {
 	// Allows us to only programmatically focus() a day when focus was already
 	// within the calendar. This stops us stealing focus from e.g. a TimePicker
@@ -161,6 +163,7 @@ export function Calendar( {
 								isFocusable={ isEqual( day, focusable ) }
 								isFocusAllowed={ isFocusWithinCalendar }
 								isToday={ isSameDay( day, new Date() ) }
+								selectionMode={ selectionMode }
 								isInvalid={
 									isInvalidDate ? isInvalidDate( day ) : false
 								}

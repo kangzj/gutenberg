@@ -84,23 +84,24 @@ export function Calendar( {
 			aria-label={ __( 'Calendar' ) }
 		>
 			<Navigator>
-				{ calendarIndex === 0 && (
-					<Button
-						icon={ isRTL() ? arrowRight : arrowLeft }
-						variant="tertiary"
-						aria-label={ __( 'View previous month' ) }
-						onClick={ () => {
-							viewPreviousMonth();
-							setFocusable( subMonths( focusable, 1 ) );
-							onMonthPreviewed?.(
-								format(
-									subMonths( viewing, 1 ),
-									TIMEZONELESS_FORMAT
-								)
-							);
-						} }
-					/>
-				) }
+				<Button
+					style={ {
+						visibility: calendarIndex === 0 ? 'visible' : 'hidden',
+					} }
+					icon={ isRTL() ? arrowRight : arrowLeft }
+					variant="tertiary"
+					aria-label={ __( 'View previous month' ) }
+					onClick={ () => {
+						viewPreviousMonth();
+						setFocusable( subMonths( focusable, 1 ) );
+						onMonthPreviewed?.(
+							format(
+								subMonths( viewing, 1 ),
+								TIMEZONELESS_FORMAT
+							)
+						);
+					} }
+				/>
 				<NavigatorHeading level={ 3 }>
 					<strong>
 						{ dateI18n(
@@ -111,23 +112,27 @@ export function Calendar( {
 					</strong>{ ' ' }
 					{ dateI18n( 'Y', viewing, -viewing.getTimezoneOffset() ) }
 				</NavigatorHeading>
-				{ calendarIndex === numberOfMonths - 1 && (
-					<Button
-						icon={ isRTL() ? arrowLeft : arrowRight }
-						variant="tertiary"
-						aria-label={ __( 'View next month' ) }
-						onClick={ () => {
-							viewNextMonth();
-							setFocusable( addMonths( focusable, 1 ) );
-							onMonthPreviewed?.(
-								format(
-									addMonths( viewing, 1 ),
-									TIMEZONELESS_FORMAT
-								)
-							);
-						} }
-					/>
-				) }
+				<Button
+					style={ {
+						visibility:
+							calendarIndex === numberOfMonths - 1
+								? 'visible'
+								: 'hidden',
+					} }
+					icon={ isRTL() ? arrowLeft : arrowRight }
+					variant="tertiary"
+					aria-label={ __( 'View next month' ) }
+					onClick={ () => {
+						viewNextMonth();
+						setFocusable( addMonths( focusable, 1 ) );
+						onMonthPreviewed?.(
+							format(
+								addMonths( viewing, 1 ),
+								TIMEZONELESS_FORMAT
+							)
+						);
+					} }
+				/>
 			</Navigator>
 			<StyledCalendar
 				onFocus={ () => setIsFocusWithinCalendar( true ) }

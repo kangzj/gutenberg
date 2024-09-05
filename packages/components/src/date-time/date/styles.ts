@@ -18,6 +18,7 @@ export const Wrapper = styled.div`
 
 export const Navigator = styled( HStack )`
 	margin-bottom: ${ space( 4 ) };
+	justify-content: space-between;
 `;
 
 export const NavigatorHeading = styled( Heading )`
